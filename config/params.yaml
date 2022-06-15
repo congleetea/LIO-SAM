@@ -1,10 +1,10 @@
 lio_sam:
 
   # Topics
-  pointCloudTopic: "point_raw"               # Point cloud data
-  imuTopic: "/imu/data"                         # IMU data
+  pointCloudTopic: "points_raw"               # Point cloud data
+  imuTopic: "imu_raw"                         # IMU data
   odomTopic: "odometry/imu"                   # IMU pre-preintegration odometry, same frequency as IMU
-  gpsTopic: "/rtk_odo"                   # GPS odometry topic from navsat, see module_navsat.launch file
+  gpsTopic: "odometry/gpsz"                   # GPS odometry topic from navsat, see module_navsat.launch file
 
   # Frames
   lidarFrame: "base_link"
@@ -23,9 +23,9 @@ lio_sam:
   savePCDDirectory: "/Downloads/LOAM/"        # in your home folder, starts and ends with "/". Warning: the code deletes "LOAM" folder then recreates it. See "mapOptimization" for implementation
 
   # Sensor Settings
-  sensor: velodyne                            # lidar sensor type, either 'velodyne' or 'ouster'
-  N_SCAN: 16                                  # number of lidar channel (i.e., 16, 32, 64, 128)
-  Horizon_SCAN: 1800                          # lidar horizontal resolution (Velodyne:1800, Ouster:512,1024,2048)
+  sensor: velodyne                            # lidar sensor type, 'velodyne' or 'ouster' or 'livox'
+  N_SCAN: 16                                  # number of lidar channel (i.e., Velodyne/Ouster: 16, 32, 64, 128, Livox Horizon: 6)
+  Horizon_SCAN: 1800                          # lidar horizontal resolution (Velodyne:1800, Ouster:512,1024,2048, Livox Horizon: 4000)
   downsampleRate: 1                           # default: 1. Downsample your data if too many points. i.e., 16 = 64 / 4, 16 = 16 / 1
   lidarMinRange: 1.0                          # default: 1.0, minimum lidar range to be used
   lidarMaxRange: 1000.0                       # default: 1000.0, maximum lidar range to be used
@@ -38,20 +38,20 @@ lio_sam:
   imuGravity: 9.80511
   imuRPYWeight: 0.01
 
-  # Extrinsics (lidar -> IMU)
+  # Extrinsics: T_lb (lidar -> imu)
   extrinsicTrans: [0.0, 0.0, 0.0]
-  # extrinsicRot: [-1, 0, 0,
+  extrinsicRot: [-1, 0, 0,
+                  0, 1, 0,
+                  0, 0, -1]
+  extrinsicRPY: [0, -1, 0,
+                 1, 0, 0,
+                 0, 0, 1]
+  # extrinsicRot: [1, 0, 0,
   #                 0, 1, 0,
-  #                 0, 0, -1]
-  # extrinsicRPY: [0,  1, 0,
-  #                -1, 0, 0,
   #                 0, 0, 1]
-  extrinsicRot: [1, 0, 0,
-                  0, 1, 0,
-                  0, 0, 1]
-  extrinsicRPY: [1, 0, 0,
-                  0, 1, 0,
-                  0, 0, 1]
+  # extrinsicRPY: [1, 0, 0,
+  #                 0, 1, 0,
+  #                 0, 0, 1]
 
   # LOAM feature threshold
   edgeThreshold: 1.0
@@ -101,14 +101,12 @@ navsat:
   wait_for_datum: false
   delay: 0.0
   magnetic_declination_radians: 0
-  yaw_offset: -1.6
-  zero_altitude: false
+  yaw_offset: 0
+  zero_altitude: true
   broadcast_utm_transform: false
   broadcast_utm_transform_as_parent_frame: false
   publish_filtered_gps: false
-  silent_tf_failure: true
-  use_local_cartesian: true
-  
+
 # EKF for Navsat
 ekf_gps:
   publish_tf: false
@@ -123,7 +121,7 @@ ekf_gps:
   # -------------------------------------
   # External IMU:
   # -------------------------------------
-  imu0: /imu/data
+  imu0: imu_correct
   # make sure the input is aligned with ROS REP105. "imu_correct" is manually transformed by myself. EKF can also transform the data using tf between your imu and base_link
   imu0_config: [false, false, false,
                 true,  true,  true,
@@ -136,7 +134,7 @@ ekf_gps:
   # -------------------------------------
   # Odometry (From Navsat):
   # -------------------------------------
-  odom0: /odometry/gps
+  odom0: odometry/gps
   odom0_config: [true,  true,  true,
                  false, false, false,
                  false, false, false,

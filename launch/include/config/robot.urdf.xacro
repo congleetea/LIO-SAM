@@ -25,10 +25,10 @@
     <origin xyz="0 0 0" rpy="0 0 0" />
   </joint>
 
-  <link name="rtk"> </link>
+  <link name="navsat_link"> </link>
   <joint name="navsat_joint" type="fixed">
     <parent link="chassis_link" />
-    <child link="rtk" />
+    <child link="navsat_link" />
     <origin xyz="0 0 0" rpy="0 0 0" />
   </joint>
 
