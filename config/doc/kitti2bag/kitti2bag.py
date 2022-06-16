@@ -100,7 +100,7 @@ def save_imu_data_raw(bag, kitti, imu_frame_id, topic):
         bag.write(topic, imu, t=imu.header.stamp)
 
         imu.header.frame_id = 'imu_enu_link'
-        bag.write('/imu_correct', imu, t=imu.header.stamp) # for LIO-SAM GPS
+        bag.write('/imu', imu, t=imu.header.stamp) # for LIO-SAM GPS
 
 def save_dynamic_tf(bag, kitti, kitti_type, initial_time):
     print("Exporting time dependent transformations")
