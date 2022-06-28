@@ -6,22 +6,24 @@ set(CMAKE_CXX_FLAGS "-std=c++14")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3 -Wall -g -pthread")
 
 find_package(catkin REQUIRED COMPONENTS
-  tf
-  roscpp
-  rospy
-  cv_bridge
-  # pcl library
-  pcl_conversions
-  # msgs
-  std_msgs
-  sensor_msgs
-  geometry_msgs
-  nav_msgs
-  message_generation
-  visualization_msgs
-)
+	tf
+	roscpp
+	rospy
+	cv_bridge
+	# pcl library
+	pcl_conversions
+	# msgs
+	std_msgs
+	sensor_msgs
+	geometry_msgs
+	nav_msgs
+	message_generation
+	visualization_msgs
+	muyuan_utils
+	)
 
 find_package(OpenMP REQUIRED)
+find_package(Eigen3 REQUIRED)
 find_package(PCL REQUIRED QUIET)
 find_package(OpenCV REQUIRED QUIET)
 message(STATUS "opencv include: ${OpenCV_INCLUDE_DIRS}")
@@ -29,55 +31,59 @@ find_package(GTSAM REQUIRED QUIET)
 find_package(Boost REQUIRED COMPONENTS timer)
 
 add_message_files(
-  DIRECTORY msg
-  FILES
-  cloud_info.msg
-)
+	DIRECTORY msg
+	FILES
+	cloud_info.msg
+	KeyPosesAndFrames.msg
+	)
 
 add_service_files(
-  DIRECTORY srv
-  FILES
-  save_map.srv
-)
+	DIRECTORY srv
+	FILES
+	save_map.srv
+	)
 
 generate_messages(
-  DEPENDENCIES
-  geometry_msgs
-  std_msgs
-  nav_msgs
-  sensor_msgs
-)
+	DEPENDENCIES
+	geometry_msgs
+	std_msgs
+	nav_msgs
+	sensor_msgs
+	)
 
 catkin_package(
-  INCLUDE_DIRS include
-  DEPENDS PCL GTSAM
+	INCLUDE_DIRS include
+	DEPENDS PCL GTSAM
 
-  CATKIN_DEPENDS
-  std_msgs
-  nav_msgs
-  geometry_msgs
-  sensor_msgs
-  message_runtime
-  message_generation
-  visualization_msgs
-)
+	CATKIN_DEPENDS
+	std_msgs
+	nav_msgs
+	geometry_msgs
+	sensor_msgs
+	message_runtime
+	message_generation
+	visualization_msgs
+	muyuan_utils
+	)
 
 # include directories
 include_directories(
 	include
 	${catkin_INCLUDE_DIRS}
 	${PCL_INCLUDE_DIRS}
-  ${OpenCV_INCLUDE_DIRS}
+	${OpenCV_INCLUDE_DIRS}
 	${GTSAM_INCLUDE_DIR}
-)
+	${EIGEN_INCLUDE_DIRS}
+	)
 
 # link directories
 link_directories(
 	include
 	${PCL_LIBRARY_DIRS}
-  ${OpenCV_LIBRARY_DIRS}
-  ${GTSAM_LIBRARY_DIRS}
-)
+	${OpenCV_LIBRARY_DIRS}
+	${GTSAM_LIBRARY_DIRS}
+	${EIGEN_LIBRARIES}
+	)
 
 ###########
 ## Build ##
